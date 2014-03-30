@@ -29,8 +29,8 @@ loop
     // Conditional execution of prepared calls
     (6 pull exec exec)#
     
-    // Execute if i < limit
-    i limit < if
+    // Execute if i <= limit
+    i limit <= if
 )# =
 
 1 100 (1 pull print)# loop // Prints 1..100
