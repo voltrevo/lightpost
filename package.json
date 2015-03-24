@@ -1,0 +1,30 @@
+{
+  "name": "lightpost",
+  "version": "0.0.1",
+  "description": "A lightweight language based on postfix notation.",
+  "main": "lightpost",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voltrevo/lightpost.git"
+  },
+  "keywords": [
+    "language",
+    "postfix",
+    "notation",
+    "javascript"
+  ],
+  "author": "Andrew Morris",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/voltrevo/lightpost/issues"
+  },
+  "homepage": "https://github.com/voltrevo/lightpost"
+}
