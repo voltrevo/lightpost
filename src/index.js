@@ -10,7 +10,7 @@ function check_type_pair(a, b, type)
 exports.interpreter = function()
 {
     var self = this;
-    
+
     this.builtin_functions =
     {
         '+':
@@ -23,7 +23,7 @@ exports.interpreter = function()
                     console.error('Error: +: arguments must be numbers or strings');
                     return;
                 }
-                
+
                 return a + b;
             }
         },
@@ -37,7 +37,7 @@ exports.interpreter = function()
                     console.error('Error: -: arguments must be numbers');
                     return;
                 }
-                
+
                 return a - b;
             }
         },
@@ -51,7 +51,7 @@ exports.interpreter = function()
                     console.error('Error: *: arguments must be numbers');
                     return;
                 }
-                
+
                 return a * b;
             }
         },
@@ -65,7 +65,7 @@ exports.interpreter = function()
                     console.error('Error: /: arguments must be numbers');
                     return;
                 }
-                
+
                 return a / b;
             }
         },
@@ -79,7 +79,7 @@ exports.interpreter = function()
                     console.error('Error: /: arguments must be numbers');
                     return;
                 }
-                
+
                 return a % b;
             }
         },
@@ -93,7 +93,7 @@ exports.interpreter = function()
                     console.error('Error: **: arguments must be numbers');
                     return;
                 }
-                
+
                 return Math.pow(a, b);
             }
         },
@@ -107,7 +107,7 @@ exports.interpreter = function()
                     console.error('Error: <: arguments must be numbers or strings');
                     return;
                 }
-                
+
                 return a < b;
             }
         },
@@ -121,7 +121,7 @@ exports.interpreter = function()
                     console.error('Error: >: arguments must be numbers or strings');
                     return;
                 }
-                
+
                 return a > b;
             }
         },
@@ -135,7 +135,7 @@ exports.interpreter = function()
                     console.error('Error: <=: arguments must be numbers or strings');
                     return;
                 }
-                
+
                 return a <= b;
             }
         },
@@ -149,7 +149,7 @@ exports.interpreter = function()
                     console.error('Error: >=: arguments must be numbers or strings');
                     return;
                 }
-                
+
                 return a >= b;
             }
         },
@@ -193,10 +193,10 @@ exports.interpreter = function()
             {
                 process.stdout.write('Stack: ');
                 console.log(self.innermost_exec_layer.stack);
-                
+
                 process.stdout.write('Variables: ');
                 console.log(self.innermost_exec_layer.variables);
-                
+
                 process.stdout.write('Module Variables: ');
                 console.log(self.module_variables);
             }
@@ -211,17 +211,17 @@ exports.interpreter = function()
                     console.error('Error: exec: argument is not a function');
                     return;
                 }
-                
+
                 if (fn.type === 'variable')
                 {
                     var value = self.innermost_exec_layer.variables[fn.name];
-                    
+
                     if (typeof value !== 'object')
                     {
                         console.error('Error: exec: variable argument is not a function');
                         return;
                     }
-                    
+
                     self.innermost_exec_layer.exec(value);
                 }
                 else if (fn.type === 'function')
@@ -246,39 +246,39 @@ exports.interpreter = function()
                     self.innermost_exec_layer.stack.length = 0;
                     return;
                 }
-                
+
                 var args = self.innermost_exec_layer.stack.splice(self.innermost_exec_layer.stack.length - 2, 2);
-                
+
                 if (typeof args[0] !== 'object' || (args[0].type !== 'variable' && args[0].type !== 'module_variable'))
                 {
                     console.error('Error: First argument to assignment is not a variable');
                     return;
                 }
-                
+
                 if (typeof args[1] === 'object')
                 {
                     if (args[1].type === 'variable')
                     {
                         var value = self.innermost_exec_layer.variables[args[1].name];
-                        
+
                         if (value === undefined)
                         {
                             console.error('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
                             return;
                         }
-                        
+
                         args[1] = value;
                     }
                     else if (args[1].type === 'module_variable')
                     {
                         var value = self.module_variables[args[1].name];
-                        
+
                         if (value === undefined)
                         {
                             console.error('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
                             return;
                         }
-                        
+
                         args[1] = value;
                     }
                     else if (args[1].type === 'function')
@@ -290,7 +290,7 @@ exports.interpreter = function()
                         throw new Error('Unrecognised type ' + args[1].type);
                     }
                 }
-                
+
                 if (args[0].type === 'variable')
                 {
                     self.innermost_exec_layer.variables[args[0].name] = args[1];
@@ -319,7 +319,7 @@ exports.interpreter = function()
             exec: function()
             {
                 var stack = self.innermost_exec_layer.stack;
-                
+
                 if (stack.length === 0)
                 {
                     console.error('Error: dup: nothing in stack to duplicate');
@@ -354,11 +354,11 @@ exports.interpreter = function()
             exec: function()
             {
                 // Turn on buffering while we wait for user input
-                
+
                 self.tasks_waiting = true;
-                
+
                 var i = rl.createInterface(process.stdin, process.stdout, null);
-                
+
                 i.once(
                     'line',
                     function(line)
@@ -417,13 +417,13 @@ exports.interpreter = function()
     this.module_variables = {};
 
     this.lp_functions = [];
-    
+
     this.constants =
     {
         'true': true,
         'false': false
     };
-    
+
     this.handle_string = function(str)
     {
         for (var i = 0; i != str.length; i++)
@@ -431,17 +431,17 @@ exports.interpreter = function()
             self.comment_layer.handle_char(str[i]);
         }
     }
-    
+
     this.comment_layer = new (function()
     {
         var layer = this;
-        
+
         this.next_layer = null;
-        
+
         this.had_slash = false;
         this.had_star = false;
         this.had_escape = false;
-        
+
         this.block_depth = 0;
         this.block_has_newline = false;
 
@@ -450,7 +450,7 @@ exports.interpreter = function()
             //console.log('comment layer: \'' + c + '\'');
             layer.mode(c);
         }
-        
+
         this.normal_mode = function(c)
         {
             if (c === '"')
@@ -462,7 +462,7 @@ exports.interpreter = function()
             else if (layer.had_slash)
             {
                 layer.had_slash = false;
-                
+
                 if (c === '/')
                 {
                     layer.mode = layer.line_comment_mode;
@@ -505,10 +505,10 @@ exports.interpreter = function()
             {
                 layer.mode = layer.normal_mode;
             }
-            
+
             layer.next_layer.handle_char(c);
         }
-        
+
         this.line_comment_mode = function(c)
         {
             if (c === '\n')
@@ -523,7 +523,7 @@ exports.interpreter = function()
             if (layer.had_slash)
             {
                 layer.had_slash = false;
-                
+
                 if (c === '*')
                 {
                     layer.block_depth++;
@@ -567,20 +567,20 @@ exports.interpreter = function()
                 }
             }
         }
-        
+
         this.mode = this.normal_mode;
     })();
-    
+
     this.word_layer = new (function()
     {
         var layer = this;
-        
+
         this.next_layer = null;
-        
+
         this.word = '';
-        
+
         this.had_escape = false;
-        
+
         this.handle_char = function(c)
         {
             //console.log('word layer: \'' + c + '\'');
@@ -600,7 +600,7 @@ exports.interpreter = function()
                     else
                     {
                         layer.word += c;
-                        
+
                         if (c === '"')
                         {
                             layer.next_layer.handle_word(layer.word);
@@ -616,7 +616,7 @@ exports.interpreter = function()
                     if (layer.word !== '')
                     {
                         var words = []; // TODO: The naming is confusing here because layer.word would seem to be ONE word
-                        
+
                         while (true)
                         {
                             if (layer.word[layer.word.length - 1] === ')')
@@ -635,7 +635,7 @@ exports.interpreter = function()
                                 {
                                     words.unshift(layer.word);
                                 }
-                                
+
                                 break;
                             }
                         }
@@ -651,7 +651,7 @@ exports.interpreter = function()
                                 layer.next_layer.handle_word(words[i]);
                             }
                         }
-                        
+
                         layer.word = '';
                     }
                 }
@@ -668,23 +668,23 @@ exports.interpreter = function()
             }
         }
     })();
-    
+
     this.comment_layer.next_layer = this.word_layer;
-    
+
     this.number_regex = new RegExp('^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$');
     this.module_variable_regex = new RegExp('^[a-zA-Z_][a-zA-Z0-9_]*@$');
     this.variable_regex = new RegExp('^[a-zA-Z_][a-zA-Z0-9_]*$');
     this.lpf_regex = new RegExp('lpf:(0|[1-9][0-9]*)(#?)');
-    
+
     this.function_layer = new (function()
     {
         var layer = this;
-        
+
         this.next_layer = null;
-        
+
         this.stack = [];
         this.curr_fn = null;
-        
+
         this.handle_word = function(word)
         {
             if (word === '(')
@@ -693,18 +693,18 @@ exports.interpreter = function()
                 {
                     layer.stack.push(layer.curr_fn);
                 }
-                
+
                 layer.curr_fn =
                 {
                     words: [],
                     id: 'lpf:' + self.lp_functions.length
                 };
-                
+
                 self.lp_functions.push(layer.curr_fn.words);
-                
+
                 return;
             }
-            
+
             if (layer.curr_fn === null)
             {
                 layer.next_layer.handle_word(word);
@@ -714,7 +714,7 @@ exports.interpreter = function()
             if (word === ')' || word === ')#')
             {
                 var lpf_word = layer.curr_fn.id + (word === ')#' ? '#' : '');
-                
+
                 if (layer.stack.length === 0)
                 {
                     layer.next_layer.handle_word(lpf_word);
@@ -725,7 +725,7 @@ exports.interpreter = function()
                     layer.curr_fn = layer.stack.pop();
                     layer.curr_fn.words.push(lpf_word);
                 }
-                
+
                 return;
             }
 
@@ -734,18 +734,18 @@ exports.interpreter = function()
                 layer.curr_fn.words.push(layer.curr_fn.id + (word === 'this#' ? '#' : ''));
                 return;
             }
-            
+
             layer.curr_fn.words.push(word);
         }
     })();
-    
+
     this.word_layer.next_layer = this.function_layer;
-    
+
     this.innermost_exec_layer = null;
-    
+
     this.tasks = [];
     this.tasks_waiting = false;
-    
+
     this.add_task = function(t, layer)
     {
         if (!self.tasks_waiting)
@@ -757,39 +757,39 @@ exports.interpreter = function()
             layer.tasks.push(t);
         }
     }
-    
+
     this.run_tasks = function()
     {
         self.tasks_waiting = false;
-        
+
         while (!self.tasks_waiting && self.innermost_exec_layer.tasks.length > 0)
         {
             self.innermost_exec_layer.tasks.shift()();
         }
     }
-    
+
     this.create_exec_layer = function() { return new (function()
     {
         var layer = this;
-        
+
         this.parent_layer = self.innermost_exec_layer;
         self.innermost_exec_layer = this;
-        
+
         this.stack = [];
         this.variables = {};
 
         this.tasks = [];
         this.add_task = function(task) { self.add_task(task, layer); }
-        
+
         this.handle_word = function(word) {layer.add_task(function()
         {
             //console.log('exec layer: handle_word: ' + word);
             var lpf_match = self.lpf_regex.exec(word);
-            
+
             if (lpf_match !== null)
             {
                 var lpf_words = self.lp_functions[parseInt(lpf_match[1])];
-                
+
                 if (lpf_match[2] === '#')
                 {
                     layer.stack.push(
@@ -813,7 +813,7 @@ exports.interpreter = function()
             else if (word[word.length - 1] === '#')
             {
                 var sub_word = word.substr(0, word.length - 1);
-                
+
                 if (self.builtin_functions[sub_word])
                 {
                     layer.stack.push({type: 'function', value: self.builtin_functions[sub_word]});
@@ -842,7 +842,7 @@ exports.interpreter = function()
             else if (layer.variables[word])
             {
                 var variable = layer.variables[word];
-                
+
                 if (typeof variable === 'object')
                 {
                     layer.exec(variable);
@@ -886,7 +886,7 @@ exports.interpreter = function()
                 console.error('Error: Cannot parse word "' + word + '"');
             }
         })}
-        
+
         this.exec = function(fn)
         {
             // Check the stack can provide the arguments required
@@ -896,12 +896,12 @@ exports.interpreter = function()
                 layer.stack.length = 0;
                 return;
             }
-            
+
             // Retrieve function arguments from the stack
             var args = layer.stack.splice(layer.stack.length - fn.argc, fn.argc);
 
             var args_error = false;
-            
+
             // Replace variables with values
             for (var i in args)
             {
@@ -912,32 +912,32 @@ exports.interpreter = function()
                     args_error = true;
                 }
             }
-            
+
             if (args_error)
             {
                 console.error('Error: Cannot call function due to argument error(s)');
                 return;
             }
-            
+
             // Call the function
             var ret = fn.exec.apply(null, args);
-            
+
             // Place the return value on the stack if one is provided
             if (ret !== undefined)
             {
                 layer.stack.push(ret);
             }
         }
-        
+
         this.exec_lpf = function(lpf_words)
         {
             var sub_exec_layer = self.create_exec_layer();
-            
+
             for (var i in lpf_words)
             {
                 sub_exec_layer.handle_word(lpf_words[i]);
             }
-            
+
             sub_exec_layer.add_task(function()
             {
                 for (var i in sub_exec_layer.stack)
@@ -949,48 +949,48 @@ exports.interpreter = function()
                         layer.stack.push(stripped);
                     }
                 }
-                
+
                 self.innermost_exec_layer = layer;
             });
         }
-        
+
         this.strip = function(x)
         {
             if (typeof x === 'object' && x.type === 'variable')
             {
                 var value = layer.variables[x.name];
-                
+
                 if (value === undefined)
                 {
                     console.error('Error: Cannot strip undefined variable ' + x.name);
                     return undefined;
                 }
-                
+
                 if (typeof value === 'object')
                 {
                     return {type: 'function', value: value};
                 }
-                
+
                 return value;
             }
             else if (typeof x === 'object' && x.type === 'module_variable')
             {
                 var value = self.module_variables[x.name];
-                
+
                 if (value === undefined)
                 {
                     console.error('Error: Cannot strip undefined variable ' + x.name);
                     return undefined;
                 }
-                
+
                 if (typeof value === 'object')
                 {
                     return {type: 'function', value: value};
                 }
-                
+
                 return value;
             }
-            
+
             return x;
         }
 
@@ -1001,9 +1001,9 @@ exports.interpreter = function()
                 console.error('Error: pull: no parent layer to pull from');
                 return;
             }
-            
+
             var pulled_items = layer.parent_layer.stack.splice(layer.parent_layer.stack.length - n, n);
-            
+
             for (var i in pulled_items)
             {
                 var stripped = layer.parent_layer.strip(pulled_items[i]);
@@ -1015,8 +1015,8 @@ exports.interpreter = function()
             }
         }
     })()};
-    
+
     this.exec_layer = this.create_exec_layer();
-    
+
     this.function_layer.next_layer = this.exec_layer;
 }
