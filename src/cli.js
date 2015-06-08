@@ -28,9 +28,6 @@ var createInterpreter = function() {
     )
 }
 
-/*
-*/
-
 if (process.argv.length === 2)
 {
     // No file provided; enter repl

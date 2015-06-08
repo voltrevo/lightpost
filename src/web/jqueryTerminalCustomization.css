@@ -1,0 +1,8 @@
+/* Override the line-height and font-size of these selectors which come from jquery.terminal.css */
+.terminal .terminal-output div div,
+.cmd .prompt,
+.terminal,
+.cmd {
+  line-height: 19px;
+  font-size: 16px;
+}

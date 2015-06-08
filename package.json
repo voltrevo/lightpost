@@ -3,11 +3,25 @@
   "version": "0.0.1",
   "description": "A lightweight language based on postfix notation.",
   "main": "src/index.js",
-  "dependencies": {},
+  "dependencies": {
+    "cssify": "^0.7.0",
+    "html2jsify": "0.0.2",
+    "jquery": "^2.1.4",
+    "jquery-mousewheel": "^3.1.12",
+    "jquery.terminal": "voltrevo/jquery.terminal#cf8f34bd053b24344e7c6c73b60f3f10f5aa6f8e",
+    "nakedjs": "^0.1.0"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "node tests/run.js",
-    "demo": "./src/cli.js examples/guess_a_number.lp"
+    "demo": "./src/cli.js examples/guess_a_number.lp",
+    "web-demo": "./node_modules/.bin/nakedjs src/web/index.js"
+  },
+  "browserify": {
+    "transform": [
+      "html2jsify",
+      "cssify"
+    ]
   },
   "repository": {
     "type": "git",
