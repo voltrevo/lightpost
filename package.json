@@ -1,6 +1,6 @@
 {
   "name": "lightpost",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A lightweight language based on postfix notation.",
   "main": "src/index.js",
   "dependencies": {
@@ -14,8 +14,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "node tests/run.js",
-    "demo": "./src/cli.js examples/guess_a_number.lp",
-    "web-demo": "./node_modules/.bin/nakedjs src/web/index.js"
+    "guess-a-number": "./src/cli.js examples/guess_a_number.lp",
+    "website": "./node_modules/.bin/nakedjs src/web/index.js"
   },
   "browserify": {
     "transform": [
