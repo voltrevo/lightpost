@@ -4,7 +4,7 @@
 
 <script src="terminal/js/jquery-1.7.1.min.js"></script>
 <script src="terminal/js/jquery.mousewheel-min.js"></script>
-<script src="terminal/js/jquery.terminal-min.js"></script>
+<script src="terminal/js/jquery.terminal-src.js"></script>
 
 <link href="terminal/css/jquery.terminal.css" rel="stylesheet"/>
 
@@ -17,34 +17,18 @@
 
 <script>
 
+'use strict'
+
 jQuery(document).ready(function($)
 {
-    var interpreter = new lp.interpreter;
-    
+    var interpreter = new lp.interpreter()
+
     $('body').terminal(
         function(command, term)
         {
-            interpreter.stdout = term.echo;
-            interpreter.stderr = term.error;
+            interpreter.outputHandler = term.echo
+            interpreter.errorHandler = term.error
             interpreter.handle_string(command + '\n');
-            /*
-            if (command !== '')
-            {
-                try
-                {
-                    var result = window.eval(command);
-                    
-                    if (result !== undefined)
-                    {
-                        term.echo(new String(result));
-                    }
-                }
-                catch(e)
-                {
-                    term.error(new String(e));
-                }
-            }
-            */
         },
         {
             greetings: '',
