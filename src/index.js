@@ -1,15 +1,17 @@
 'use strict';
 
-var rl = require('readline');
-
 function check_type_pair(a, b, type)
 {
     return (typeof a === type && typeof b === type);
 }
 
-exports.interpreter = function()
+exports.interpreter = function(outputHandler, errorHandler, getLine)
 {
     var self = this;
+
+    this.outputHandler = outputHandler || function(){};
+    this.errorHandler = errorHandler || function(){};
+    this.getLine = getLine || null;
 
     this.builtin_functions =
     {
@@ -20,7 +22,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number') && !check_type_pair(a, b, 'string'))
                 {
-                    console.error('Error: +: arguments must be numbers or strings');
+                    self.errorHandler('Error: +: arguments must be numbers or strings');
                     return;
                 }
 
@@ -34,7 +36,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number'))
                 {
-                    console.error('Error: -: arguments must be numbers');
+                    self.errorHandler('Error: -: arguments must be numbers');
                     return;
                 }
 
@@ -48,7 +50,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number'))
                 {
-                    console.error('Error: *: arguments must be numbers');
+                    self.errorHandler('Error: *: arguments must be numbers');
                     return;
                 }
 
@@ -62,7 +64,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number'))
                 {
-                    console.error('Error: /: arguments must be numbers');
+                    self.errorHandler('Error: /: arguments must be numbers');
                     return;
                 }
 
@@ -76,7 +78,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number'))
                 {
-                    console.error('Error: /: arguments must be numbers');
+                    self.errorHandler('Error: /: arguments must be numbers');
                     return;
                 }
 
@@ -90,7 +92,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number'))
                 {
-                    console.error('Error: **: arguments must be numbers');
+                    self.errorHandler('Error: **: arguments must be numbers');
                     return;
                 }
 
@@ -104,7 +106,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number') && !check_type_pair(a, b, 'string'))
                 {
-                    console.error('Error: <: arguments must be numbers or strings');
+                    self.errorHandler('Error: <: arguments must be numbers or strings');
                     return;
                 }
 
@@ -118,7 +120,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number') && !check_type_pair(a, b, 'string'))
                 {
-                    console.error('Error: >: arguments must be numbers or strings');
+                    self.errorHandler('Error: >: arguments must be numbers or strings');
                     return;
                 }
 
@@ -132,7 +134,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number') && !check_type_pair(a, b, 'string'))
                 {
-                    console.error('Error: <=: arguments must be numbers or strings');
+                    self.errorHandler('Error: <=: arguments must be numbers or strings');
                     return;
                 }
 
@@ -146,7 +148,7 @@ exports.interpreter = function()
             {
                 if (!check_type_pair(a, b, 'number') && !check_type_pair(a, b, 'string'))
                 {
-                    console.error('Error: >=: arguments must be numbers or strings');
+                    self.errorHandler('Error: >=: arguments must be numbers or strings');
                     return;
                 }
 
@@ -170,7 +172,7 @@ exports.interpreter = function()
             {
                 if (typeof x !== 'boolean')
                 {
-                    console.error('Error: !: argument must be a boolean');
+                    self.errorHandler('Error: !: argument must be a boolean');
                 }
 
                 return !x;
@@ -184,21 +186,20 @@ exports.interpreter = function()
         'print':
         {
             argc: 1,
-            exec: function(s) { console.log(s); }
+            exec: function(s) { self.outputHandler(s); }
         },
         'inspect':
         {
             argc: 0,
             exec: function()
             {
-                process.stdout.write('Stack: ');
-                console.log(self.innermost_exec_layer.stack);
+                self.outputHandler('Stack: ' + JSON.stringify(self.innermost_exec_layer.stack));
 
-                process.stdout.write('Variables: ');
-                console.log(self.innermost_exec_layer.variables);
+                self.outputHandler(
+                    'Variables: ' + JSON.stringify(self.innermost_exec_layer.variables)
+                );
 
-                process.stdout.write('Module Variables: ');
-                console.log(self.module_variables);
+                self.outputHandler('Module Variables: ' + JSON.stringify(self.module_variables));
             }
         },
         'exec':
@@ -208,7 +209,7 @@ exports.interpreter = function()
             {
                 if (typeof fn !== 'object')
                 {
-                    console.error('Error: exec: argument is not a function');
+                    self.errorHandler('Error: exec: argument is not a function');
                     return;
                 }
 
@@ -218,7 +219,7 @@ exports.interpreter = function()
 
                     if (typeof value !== 'object')
                     {
-                        console.error('Error: exec: variable argument is not a function');
+                        self.errorHandler('Error: exec: variable argument is not a function');
                         return;
                     }
 
@@ -242,7 +243,7 @@ exports.interpreter = function()
                 // Check the stack can provide the arguments required
                 if (self.innermost_exec_layer.stack.length < 2)
                 {
-                    console.error('Error: Not enough arguments for assignment');
+                    self.errorHandler('Error: Not enough arguments for assignment');
                     self.innermost_exec_layer.stack.length = 0;
                     return;
                 }
@@ -251,7 +252,7 @@ exports.interpreter = function()
 
                 if (typeof args[0] !== 'object' || (args[0].type !== 'variable' && args[0].type !== 'module_variable'))
                 {
-                    console.error('Error: First argument to assignment is not a variable');
+                    self.errorHandler('Error: First argument to assignment is not a variable');
                     return;
                 }
 
@@ -263,7 +264,7 @@ exports.interpreter = function()
 
                         if (value === undefined)
                         {
-                            console.error('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
+                            self.errorHandler('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
                             return;
                         }
 
@@ -275,7 +276,7 @@ exports.interpreter = function()
 
                         if (value === undefined)
                         {
-                            console.error('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
+                            self.errorHandler('Error: Cannot assign ' + args[0].name + ' to undefined variable ' + args[1].name);
                             return;
                         }
 
@@ -322,7 +323,7 @@ exports.interpreter = function()
 
                 if (stack.length === 0)
                 {
-                    console.error('Error: dup: nothing in stack to duplicate');
+                    self.errorHandler('Error: dup: nothing in stack to duplicate');
                     return;
                 }
 
@@ -353,20 +354,18 @@ exports.interpreter = function()
             argc: 0,
             exec: function()
             {
-                // Turn on buffering while we wait for user input
+                if (!self.getLine) {
+                    self.errorHandler('Error: readline: not available')
+                    return
+                }
 
+                // Turn on buffering while we wait for user input
                 self.tasks_waiting = true;
 
-                var i = rl.createInterface(process.stdin, process.stdout, null);
-
-                i.once(
-                    'line',
-                    function(line)
-                    {
-                        i.close();
-                        self.innermost_exec_layer.stack.push(line);
-                        self.run_tasks();
-                    });
+                self.getLine(function(line) {
+                    self.innermost_exec_layer.stack.push(line);
+                    self.run_tasks();
+                })
             }
         },
         'floor':
@@ -376,7 +375,7 @@ exports.interpreter = function()
             {
                 if (typeof x !== 'number')
                 {
-                    console.error('Error: floor: argument is not a number');
+                    self.errorHandler('Error: floor: argument is not a number');
                     return;
                 }
 
@@ -390,7 +389,7 @@ exports.interpreter = function()
             {
                 if (typeof x !== 'string')
                 {
-                    console.error('Error: str_to_f: argument is not a string');
+                    self.errorHandler('Error: str_to_f: argument is not a string');
                     return;
                 }
 
@@ -447,7 +446,7 @@ exports.interpreter = function()
 
         this.handle_char = function(c)
         {
-            //console.log('comment layer: \'' + c + '\'');
+            //self.outputHandler('comment layer: \'' + c + '\'');
             layer.mode(c);
         }
 
@@ -527,7 +526,7 @@ exports.interpreter = function()
                 if (c === '*')
                 {
                     layer.block_depth++;
-                    //console.log('incremented block depth to ' + layer.block_depth);
+                    //self.outputHandler('incremented block depth to ' + layer.block_depth);
                 }
                 else if (c === '\n')
                 {
@@ -541,7 +540,7 @@ exports.interpreter = function()
                 if (c === '/')
                 {
                     layer.block_depth--;
-                    //console.log('decremented block depth to ' + layer.block_depth);
+                    //self.outputHandler('decremented block depth to ' + layer.block_depth);
 
                     if (layer.block_depth === 0)
                     {
@@ -583,7 +582,7 @@ exports.interpreter = function()
 
         this.handle_char = function(c)
         {
-            //console.log('word layer: \'' + c + '\'');
+            //self.outputHandler('word layer: \'' + c + '\'');
             if (layer.word.length > 0 && layer.word[0] === '"')
             {
                 if (layer.had_escape)
@@ -644,7 +643,7 @@ exports.interpreter = function()
                         {
                             if (self.lpf_regex.test(words[i]))
                             {
-                                console.error('Error: Cannot parse word "' + words[i] + '"');
+                                self.errorHandler('Error: Cannot parse word "' + words[i] + '"');
                             }
                             else
                             {
@@ -783,7 +782,7 @@ exports.interpreter = function()
 
         this.handle_word = function(word) {layer.add_task(function()
         {
-            //console.log('exec layer: handle_word: ' + word);
+            //self.outputHandler('exec layer: handle_word: ' + word);
             var lpf_match = self.lpf_regex.exec(word);
 
             if (lpf_match !== null)
@@ -828,7 +827,7 @@ exports.interpreter = function()
                 }
                 else
                 {
-                    console.error('Error: No matching symbol for "' + sub_word + '"');
+                    self.errorHandler('Error: No matching symbol for "' + sub_word + '"');
                 }
             }
             else if (self.builtin_functions[word])
@@ -883,7 +882,7 @@ exports.interpreter = function()
             }
             else
             {
-                console.error('Error: Cannot parse word "' + word + '"');
+                self.errorHandler('Error: Cannot parse word "' + word + '"');
             }
         })}
 
@@ -892,7 +891,7 @@ exports.interpreter = function()
             // Check the stack can provide the arguments required
             if (layer.stack.length < fn.argc)
             {
-                console.error('Error: Not enough arguments for function (' + layer.stack.length + ' < ' + fn.argc + ')');
+                self.errorHandler('Error: Not enough arguments for function (' + layer.stack.length + ' < ' + fn.argc + ')');
                 layer.stack.length = 0;
                 return;
             }
@@ -915,7 +914,7 @@ exports.interpreter = function()
 
             if (args_error)
             {
-                console.error('Error: Cannot call function due to argument error(s)');
+                self.errorHandler('Error: Cannot call function due to argument error(s)');
                 return;
             }
 
@@ -962,7 +961,7 @@ exports.interpreter = function()
 
                 if (value === undefined)
                 {
-                    console.error('Error: Cannot strip undefined variable ' + x.name);
+                    self.errorHandler('Error: Cannot strip undefined variable ' + x.name);
                     return undefined;
                 }
 
@@ -979,7 +978,7 @@ exports.interpreter = function()
 
                 if (value === undefined)
                 {
-                    console.error('Error: Cannot strip undefined variable ' + x.name);
+                    self.errorHandler('Error: Cannot strip undefined variable ' + x.name);
                     return undefined;
                 }
 
@@ -998,7 +997,7 @@ exports.interpreter = function()
         {
             if (layer.parent_layer === null)
             {
-                console.error('Error: pull: no parent layer to pull from');
+                self.errorHandler('Error: pull: no parent layer to pull from');
                 return;
             }
 
