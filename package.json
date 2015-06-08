@@ -2,7 +2,7 @@
   "name": "lightpost",
   "version": "0.0.1",
   "description": "A lightweight language based on postfix notation.",
-  "main": "lightpost",
+  "main": "src/index.js",
   "directories": {
     "test": "tests"
   },

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-var lp = require('lightpost');
+var lp = require('./index');
 var rl = require('readline');
 var fs = require('fs');
 
 if (process.argv.length === 2)
 {
     // No file provided; enter repl
-    
+
     var interpreter = new lp.interpreter;
 
     var i = rl.createInterface(process.stdin, process.stdout, null);
@@ -32,7 +32,7 @@ if (process.argv.length === 2)
 else if (process.argv.length === 3)
 {
     // Execute file
-    
+
     var interpreter = new lp.interpreter;
     var program = fs.createReadStream(process.argv[2]);
 
