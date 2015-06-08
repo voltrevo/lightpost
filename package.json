@@ -21,6 +21,7 @@
     "notation",
     "javascript"
   ],
+  "bin": "src/cli.js",
   "author": "Andrew Morris",
   "license": "MIT",
   "bugs": {
