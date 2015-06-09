@@ -115,7 +115,7 @@ Hello world!
 # Run the Website
 
 ```
-git checkout git@github.com:voltrevo/lightpost.git
+git clone git@github.com:voltrevo/lightpost.git
 cd lightpost
 npm install
 npm run website
