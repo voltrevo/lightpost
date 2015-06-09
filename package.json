@@ -6,9 +6,11 @@
   "dependencies": {
     "cssify": "^0.7.0",
     "html2jsify": "0.0.2",
+    "info-overlay": "0.0.1",
     "jquery": "^2.1.4",
     "jquery-mousewheel": "^3.1.12",
     "jquery.terminal": "voltrevo/jquery.terminal#cf8f34bd053b24344e7c6c73b60f3f10f5aa6f8e",
+    "markdownify": "^0.1.0",
     "nakedjs": "^0.1.0"
   },
   "devDependencies": {},
@@ -20,7 +22,8 @@
   "browserify": {
     "transform": [
       "html2jsify",
-      "cssify"
+      "cssify",
+      "markdownify"
     ]
   },
   "repository": {
