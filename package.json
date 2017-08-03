@@ -13,7 +13,10 @@
     "markdownify": "^0.1.0",
     "nakedjs": "^0.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "mz": "^2.6.0"
+  },
   "scripts": {
     "test": "node tests/run.js",
     "guess-a-number": "./src/cli.js examples/guess_a_number.lp",
